@@ -19,6 +19,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.demochatapp.Retrofit.NetworkClient;
+import com.example.demochatapp.Retrofit.Profile;
+import com.example.demochatapp.Retrofit.RequestService;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -31,21 +34,16 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
 public class ChatActivity extends AppCompatActivity {
-
-
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
-    private final String TAG="MainActivity";
-    private Socket mSocket;
-    {
-        try {
-            mSocket = IO.socket("http://192.168.0.104:3000");
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "instance initializer: ERROR");
-        }
-    }
+    private final String TAG="ChatAvtivity";
     private HashMap<String,String> contacts=new HashMap<>();
     private String user_email;
+    private String[] phone;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -55,39 +53,27 @@ public class ChatActivity extends AppCompatActivity {
 
         final Intent intent=getIntent();
         user_email=intent.getStringExtra("email");
-        getContactsList();
+        getMyContacts();
+        getDatabaseContacts();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void getContactsList()
+    private void getDatabaseContacts()
     {
-        if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-        else
-            getContacts();
-    }
+        Retrofit retrofit = NetworkClient.getRetrofitClient();
+        final RequestService requestService=retrofit.create(RequestService.class);
+        Call<Profile> call=requestService.getDatabaseContacts(phone);
+        call.enqueue(new Callback<Profile>() {
+            @Override
+            public void onResponse(Call<Profile> call, Response<Profile> response)
+            {
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! do the
-                    // calendar task you need to do.
-                    Toast.makeText(this,"Request Denied",Toast.LENGTH_SHORT).show();
-                    getContacts();
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(this,"Request Denied",Toast.LENGTH_SHORT).show();
-                }
-                return;
             }
-        }
+            @Override
+            public void onFailure(Call<Profile> call, Throwable t) {
+            }
+        });
     }
-
-    private void getContacts()
+    private void getMyContacts()
     {
         Cursor cursor_Android_Contacts = null;
         ContentResolver contentResolver = getContentResolver();
@@ -126,7 +112,12 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         }
-        for(Map.Entry<String,String> entry:contacts.entrySet())
-            Log.e(TAG, entry.getKey()+" : "+entry.getValue());
+        int size=contacts.size();
+        phone=new String[size];
+        int index=0;
+        for(Map.Entry<String,String> entry:contacts.entrySet()) {
+            Log.e(TAG, entry.getKey() + " : " + entry.getValue());
+            phone[index++]=entry.getKey();
+        }
     }
 }
