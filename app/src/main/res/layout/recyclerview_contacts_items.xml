@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/contactsItem"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="88dp"
+    android:layout_margin="8dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#FFF">
+
+    <TextView
+        android:id="@+id/contactName"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:text="NAME"
+        android:layout_margin="16dp"
+        android:textColor="#000"/>
+</RelativeLayout>

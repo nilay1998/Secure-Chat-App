@@ -3,6 +3,8 @@ package com.example.demochatapp;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -19,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.demochatapp.Retrofit.Contacts;
 import com.example.demochatapp.Retrofit.NetworkClient;
 import com.example.demochatapp.Retrofit.Profile;
 import com.example.demochatapp.Retrofit.RequestService;
@@ -31,6 +34,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +48,9 @@ public class ChatActivity extends AppCompatActivity {
     private HashMap<String,String> contacts=new HashMap<>();
     private String user_email;
     private String[] phone;
+    ArrayList<Contacts> contactsInDatabse=new ArrayList<>();
+    RecyclerView recyclerView;
+    ContactsAdapter adapter;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -55,21 +62,32 @@ public class ChatActivity extends AppCompatActivity {
         user_email=intent.getStringExtra("email");
         getMyContacts();
         getDatabaseContacts();
+        recyclerView=findViewById(R.id.contactsList);
     }
 
     private void getDatabaseContacts()
     {
         Retrofit retrofit = NetworkClient.getRetrofitClient();
         final RequestService requestService=retrofit.create(RequestService.class);
-        Call<Profile> call=requestService.getDatabaseContacts(phone);
-        call.enqueue(new Callback<Profile>() {
+        Call<ArrayList<Contacts>> call=requestService.getDatabaseContacts(phone);
+        call.enqueue(new Callback<ArrayList<Contacts>>() {
             @Override
-            public void onResponse(Call<Profile> call, Response<Profile> response)
-            {
-
+            public void onResponse(Call<ArrayList<Contacts>> call, Response<ArrayList<Contacts>> response) {
+                contactsInDatabse=response.body();
+                for(int i=0;i<contactsInDatabse.size();i++)
+                {
+                    Contacts curr=contactsInDatabse.get(i);
+                    curr.setName(contacts.get(curr.getPhone()));
+                    Log.e(TAG, "onResponse: "+curr.getName()+" "+contactsInDatabse.get(i).getName());
+                }
+                adapter=new ContactsAdapter(getApplicationContext(),contactsInDatabse,user_email);
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             }
+
             @Override
-            public void onFailure(Call<Profile> call, Throwable t) {
+            public void onFailure(Call<ArrayList<Contacts>> call, Throwable t) {
+
             }
         });
     }
@@ -105,7 +123,17 @@ public class ChatActivity extends AppCompatActivity {
                         phoneNumber=phoneNumber.replaceAll("\\s", "");
                         if(phoneNumber.length()>=10) {
                             phoneNumber=phoneNumber.substring(phoneNumber.length()-10,phoneNumber.length());
-                            contacts.put(phoneNumber,contact_display_name);
+                            boolean flag=true;
+                            for(int i=0;i<10;i++)
+                            {
+                                if(!Character.isDigit(phoneNumber.charAt(i)))
+                                {
+                                    flag=false;
+                                    break;
+                                }
+                            }
+                            if(flag)
+                                contacts.put(phoneNumber,contact_display_name);
                         }
                     }
                     phoneCursor.close();

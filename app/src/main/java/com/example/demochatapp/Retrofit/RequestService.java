@@ -1,5 +1,7 @@
 package com.example.demochatapp.Retrofit;
 
+import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -14,5 +16,5 @@ public interface RequestService
     Call<Profile> loginUser(@Field("email") String email,
                              @Field("password") String password );
     @GET("getContacts")
-    Call<Profile> getDatabaseContacts(@Query("phone") String[] phone);
+    Call<ArrayList<Contacts>> getDatabaseContacts(@Query("phone") String[] phone);
 }

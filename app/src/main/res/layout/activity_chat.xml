@@ -9,36 +9,8 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contactsList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/text_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Wait..."
-            android:textColor="#000"
-            android:textSize="36dp"
-            android:textStyle="bold|italic"/>
-        <EditText
-            android:id="@+id/receiver_et"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="32dp"
-            android:hint="Send to?"
-            android:textColor="#000"
-            android:inputType="textPassword"/>
-        <Button
-            android:id="@+id/send_button"
-            android:layout_margin="32dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Send"/>
-    </LinearLayout>
-
+        android:layout_height="wrap_content"/>
 </RelativeLayout>
