@@ -17,4 +17,7 @@ public interface RequestService
                              @Field("password") String password );
     @GET("getContacts")
     Call<ArrayList<Contacts>> getDatabaseContacts(@Query("phone") String[] phone);
+
+    @GET("getMessages")
+    Call<ArrayList<Message>> getMessages(@Query("sender") String sender,@Query("receiver") String receiver);
 }

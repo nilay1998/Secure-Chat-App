@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.demochatapp.Retrofit.MessageAdapter;
+import com.example.demochatapp.Retrofit.Message;
+import com.example.demochatapp.Retrofit.NetworkClient;
+import com.example.demochatapp.Retrofit.RequestService;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -21,6 +23,11 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class MessageActivity extends AppCompatActivity {
     private String receiverEmail;
@@ -53,7 +60,27 @@ public class MessageActivity extends AppCompatActivity {
         senderEmail=intent.getStringExtra("senderEmail");
 
         initviews();
+        show_prev_msg();
         run_socket();
+    }
+
+    private void show_prev_msg() {
+        Retrofit retrofit = NetworkClient.getRetrofitClient();
+        final RequestService requestService=retrofit.create(RequestService.class);
+        Call<ArrayList<Message>> call=requestService.getMessages(senderEmail,receiverEmail);
+        call.enqueue(new Callback<ArrayList<Message>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Message>> call, Response<ArrayList<Message>> response) {
+                messageArrayList.addAll(response.body());
+                recyclerView.smoothScrollToPosition(adapter.getItemCount());
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Message>> call, Throwable t) {
+
+            }
+        });
     }
 
     private void initviews()

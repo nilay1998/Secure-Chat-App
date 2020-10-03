@@ -1,33 +1,38 @@
-package com.example.demochatapp;
+package com.example.demochatapp.Retrofit;
 
 public class Message {
 
-    private String senderEmail;
-    private String receiverEmail;
-    private String message ;
+    private String sender;
+    private String receiver;
+    private String message;
+    private String created_at;
+
+    public String getCreated_at() {
+        return created_at;
+    }
 
     public Message(){
     }
     public Message(String senderEmail, String message,String receiverEmail) {
-        this.senderEmail = senderEmail;
+        this.sender = senderEmail;
         this.message = message;
-        this.receiverEmail=receiverEmail;
+        this.receiver=receiverEmail;
     }
 
     public String getSenderEmail() {
-        return senderEmail;
+        return sender;
     }
 
     public void setSenderEmail(String senderEmail) {
-        this.senderEmail = senderEmail;
+        this.sender = senderEmail;
     }
 
     public String getReceiverEmail() {
-        return receiverEmail;
+        return receiver;
     }
 
     public void setReceiverEmail(String receiverEmail) {
-        this.receiverEmail = receiverEmail;
+        this.receiver = receiverEmail;
     }
 
     public String getMessage() {

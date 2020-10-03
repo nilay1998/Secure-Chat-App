@@ -1,5 +1,6 @@
-package com.example.demochatapp.Retrofit;
+package com.example.demochatapp;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.demochatapp.Message;
-import com.example.demochatapp.R;
+import com.example.demochatapp.Retrofit.Message;
 
 import java.util.ArrayList;
 
@@ -28,6 +28,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
+        Log.e("MessageAdapter", email+" "+messagesList.get(position).getSenderEmail());
         if (email.equals(messagesList.get(position).getSenderEmail())) {
             // If the current user is the sender of the message
             return VIEW_TYPE_MESSAGE_SENT;
