@@ -14,43 +14,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="LOGIN"
+            android:text="SIGN UP!"
             android:textColor="#000"
             android:textSize="36dp"
             android:textStyle="bold|italic"/>
         <EditText
-            android:id="@+id/email_et"
+            android:id="@+id/signup_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="32dp"
-            android:hint="EMAIL"
+            android:hint="Name"
             android:textColor="#000"/>
         <EditText
-            android:id="@+id/password_et"
+            android:id="@+id/signup_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="32dp"
+            android:hint="Email"
+            android:textColor="#000" />
+        <EditText
+            android:id="@+id/signup_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="32dp"
             android:hint="Password"
-            android:textColor="#000"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword"
+            android:textColor="#000"/>
+        <EditText
+            android:id="@+id/signup_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="32dp"
+            android:inputType="number"
+            android:hint="Phone Number"
+            android:textColor="#000"/>
         <Button
-            android:id="@+id/submit_button"
+            android:id="@+id/signup_button"
             android:layout_margin="32dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SUBMIT"/>
-        <Button
-            android:id="@+id/signin"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="New user? Sign up"/>
+            android:text="Submit"/>
     </LinearLayout>
 
 </RelativeLayout>

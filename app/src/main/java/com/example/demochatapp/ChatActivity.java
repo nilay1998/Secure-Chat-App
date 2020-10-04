@@ -15,6 +15,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,6 +54,7 @@ public class ChatActivity extends AppCompatActivity {
     ArrayList<Contacts> contactsInDatabse=new ArrayList<>();
     RecyclerView recyclerView;
     ContactsAdapter adapter;
+    private Sessions session;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -63,6 +67,32 @@ public class ChatActivity extends AppCompatActivity {
         getMyContacts();
         getDatabaseContacts();
         recyclerView=findViewById(R.id.contactsList);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+                logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logout() {
+        session=new Sessions(getApplicationContext());
+        session.killSession();
+        Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void getDatabaseContacts()

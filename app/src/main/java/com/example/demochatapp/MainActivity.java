@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText email_editText;
     private EditText password_ediText;
     private Button submit_button;
+    private Button signIn_button;
+    private Sessions session;
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,17 @@ public class MainActivity extends AppCompatActivity {
         getPermission();
         initViews();
         login();
+        register();
+    }
+
+    private void register() {
+        signIn_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -76,34 +89,47 @@ public class MainActivity extends AppCompatActivity {
 
     private void login()
     {
-        submit_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String email=email_editText.getText().toString();
-                final String password=password_ediText.getText().toString();
-                Retrofit retrofit = NetworkClient.getRetrofitClient();
-                final RequestService requestService=retrofit.create(RequestService.class);
-                Call<Profile> call=requestService.loginUser(email,password);
-                call.enqueue(new Callback<Profile>() {
-                    @Override
-                    public void onResponse(Call<Profile> call, Response<Profile> response)
-                    {
-                        Toast.makeText(getApplicationContext(),""+response.body().getMessage(),Toast.LENGTH_SHORT).show();
-                        if(response.body().getStatus().equals("1"))
+        session=new Sessions(getApplicationContext());
+        if(session.isLoggedIn())
+        {
+            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+            intent.putExtra("email", session.getValue("email"));
+            startActivity(intent);
+            finish();
+        }
+        else
+        {
+            submit_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final String email=email_editText.getText().toString();
+                    final String password=password_ediText.getText().toString();
+                    Retrofit retrofit = NetworkClient.getRetrofitClient();
+                    final RequestService requestService=retrofit.create(RequestService.class);
+                    Call<Profile> call=requestService.loginUser(email,password);
+                    call.enqueue(new Callback<Profile>() {
+                        @Override
+                        public void onResponse(Call<Profile> call, Response<Profile> response)
                         {
-                            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                            intent.putExtra("email", email);
-                            intent.putExtra("password", password);
-                            startActivity(intent);
+                            Toast.makeText(getApplicationContext(),""+response.body().getMessage(),Toast.LENGTH_SHORT).show();
+                            if(response.body().getStatus().equals("1"))
+                            {
+                                session.createSession();
+                                session.setValue("email",email);
+                                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                                intent.putExtra("email", email);
+                                startActivity(intent);
+                                finish();
+                            }
                         }
-                    }
-                    @Override
-                    public void onFailure(Call<Profile> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(),t.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
+                        @Override
+                        public void onFailure(Call<Profile> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(),t.getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
     }
 
     private void initViews()
@@ -111,5 +137,6 @@ public class MainActivity extends AppCompatActivity {
         email_editText=findViewById(R.id.email_et);
         password_ediText=findViewById(R.id.password_et);
         submit_button=findViewById(R.id.submit_button);
+        signIn_button=findViewById(R.id.signin);
     }
 }
