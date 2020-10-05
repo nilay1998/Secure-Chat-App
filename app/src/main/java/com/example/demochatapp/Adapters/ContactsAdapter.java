@@ -1,18 +1,19 @@
-package com.example.demochatapp;
+package com.example.demochatapp.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.demochatapp.Retrofit.Contacts;
+import com.example.demochatapp.MessageActivity;
+import com.example.demochatapp.R;
+import com.example.demochatapp.Service.Models.Contacts;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     Context mContext;
     ArrayList<Contacts> mUserContacts;
     String mUserEmail;
-    ContactsAdapter(Context mContext, ArrayList<Contacts> mUserContacts, String mUserEmail)
+    public ContactsAdapter(Context mContext, ArrayList<Contacts> mUserContacts, String mUserEmail)
     {
         this.mContext=mContext;
         this.mUserContacts=mUserContacts;
@@ -42,7 +43,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         holder.contactsItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(mContext,MessageActivity.class);
+                Intent intent=new Intent(mContext, MessageActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("receiverName",mUserContacts.get(position).getName());
                 intent.putExtra("senderEmail",mUserEmail);

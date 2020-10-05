@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#fff"
     android:orientation="vertical"
-    tools:context=".ChatActivity">
+    tools:context=".ContactsActivity">
 
     <LinearLayout
         android:id="@+id/recyclerContainer"

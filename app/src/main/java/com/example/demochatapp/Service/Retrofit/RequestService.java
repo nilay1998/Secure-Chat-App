@@ -1,4 +1,8 @@
-package com.example.demochatapp.Retrofit;
+package com.example.demochatapp.Service.Retrofit;
+
+import com.example.demochatapp.Service.Models.Contacts;
+import com.example.demochatapp.Service.Models.Message;
+import com.example.demochatapp.Service.Models.Profile;
 
 import java.util.ArrayList;
 
@@ -14,7 +18,7 @@ public interface RequestService
     @POST("login")
     @FormUrlEncoded
     Call<Profile> loginUser(@Field("email") String email,
-                             @Field("password") String password);
+                            @Field("password") String password);
     @POST("register")
     @FormUrlEncoded
     Call<Profile> registerUser(@Field("name") String name,
@@ -25,5 +29,5 @@ public interface RequestService
     Call<ArrayList<Contacts>> getDatabaseContacts(@Query("phone") String[] phone);
 
     @GET("getMessages")
-    Call<ArrayList<Message>> getMessages(@Query("sender") String sender,@Query("receiver") String receiver);
+    Call<ArrayList<Message>> getMessages(@Query("sender") String sender, @Query("receiver") String receiver);
 }

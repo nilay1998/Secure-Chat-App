@@ -9,9 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.demochatapp.Retrofit.NetworkClient;
-import com.example.demochatapp.Retrofit.Profile;
-import com.example.demochatapp.Retrofit.RequestService;
+import com.example.demochatapp.Service.Retrofit.NetworkClient;
+import com.example.demochatapp.Service.Models.Profile;
+import com.example.demochatapp.Service.Retrofit.RequestService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,7 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),response.body().getMessage(),Toast.LENGTH_SHORT).show();
                         if(response.body().getStatus().equals("1"))
                         {
-                            Intent intent = new Intent(SignUpActivity.this, ChatActivity.class);
+                            Intent intent = new Intent(SignUpActivity.this, ContactsActivity.class);
                             intent.putExtra("email", email);
                             startActivity(intent);
                             finish();

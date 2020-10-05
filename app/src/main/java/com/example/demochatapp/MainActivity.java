@@ -8,23 +8,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.demochatapp.Retrofit.NetworkClient;
-import com.example.demochatapp.Retrofit.Profile;
-import com.example.demochatapp.Retrofit.RequestService;
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URISyntaxException;
+import com.example.demochatapp.Service.Retrofit.NetworkClient;
+import com.example.demochatapp.Service.Models.Profile;
+import com.example.demochatapp.Service.Retrofit.RequestService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -92,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         session=new Sessions(getApplicationContext());
         if(session.isLoggedIn())
         {
-            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+            Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
             intent.putExtra("email", session.getValue("email"));
             startActivity(intent);
             finish();
@@ -116,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                             {
                                 session.createSession();
                                 session.setValue("email",email);
-                                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                                Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
                                 intent.putExtra("email", email);
                                 startActivity(intent);
                                 finish();

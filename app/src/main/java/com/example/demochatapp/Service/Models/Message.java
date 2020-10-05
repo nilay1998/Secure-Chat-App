@@ -1,4 +1,4 @@
-package com.example.demochatapp.Retrofit;
+package com.example.demochatapp.Service.Models;
 
 public class Message {
 
@@ -11,8 +11,6 @@ public class Message {
         return created_at;
     }
 
-    public Message(){
-    }
     public Message(String senderEmail, String message,String receiverEmail) {
         this.sender = senderEmail;
         this.message = message;

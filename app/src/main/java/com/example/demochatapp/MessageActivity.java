@@ -1,6 +1,8 @@
 package com.example.demochatapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,9 +13,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.demochatapp.Retrofit.Message;
-import com.example.demochatapp.Retrofit.NetworkClient;
-import com.example.demochatapp.Retrofit.RequestService;
+import com.example.demochatapp.Adapters.MessageAdapter;
+import com.example.demochatapp.Service.Models.Message;
+import com.example.demochatapp.Service.Retrofit.NetworkClient;
+import com.example.demochatapp.Service.Retrofit.RequestService;
+import com.example.demochatapp.ViewModels.MessageActivityViewModel;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -40,6 +44,7 @@ public class MessageActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MessageAdapter adapter;
     private ArrayList<Message> messageArrayList=new ArrayList<>();
+    private MessageActivityViewModel messageActivityViewModel;
     private static final String TAG = "MessageActivity";
 
     {
@@ -59,36 +64,31 @@ public class MessageActivity extends AppCompatActivity {
         receiverName=intent.getStringExtra("receiverName");
         senderEmail=intent.getStringExtra("senderEmail");
 
-        initviews();
-        show_prev_msg();
-        run_socket();
-    }
 
-    private void show_prev_msg() {
-        Retrofit retrofit = NetworkClient.getRetrofitClient();
-        final RequestService requestService=retrofit.create(RequestService.class);
-        Call<ArrayList<Message>> call=requestService.getMessages(senderEmail,receiverEmail);
-        call.enqueue(new Callback<ArrayList<Message>>() {
+        run_socket();
+
+        messageActivityViewModel=new ViewModelProvider(this).get(MessageActivityViewModel.class);
+        messageActivityViewModel.init(senderEmail,receiverEmail);
+        messageActivityViewModel.getmMessages().observe(this, new Observer<ArrayList<Message>>() {
             @Override
-            public void onResponse(Call<ArrayList<Message>> call, Response<ArrayList<Message>> response) {
-                messageArrayList.addAll(response.body());
+            public void onChanged(ArrayList<Message> messages) {
+                Log.e(TAG, "onChanged: ");
                 recyclerView.smoothScrollToPosition(adapter.getItemCount());
                 adapter.notifyDataSetChanged();
             }
-
-            @Override
-            public void onFailure(Call<ArrayList<Message>> call, Throwable t) {
-
-            }
         });
+
+        initviews();
     }
+
 
     private void initviews()
     {
         msg_editText=findViewById(R.id.message2);
         send_button=findViewById(R.id.send);
+
         recyclerView=findViewById(R.id.messageList);
-        adapter=new MessageAdapter(messageArrayList,senderEmail);
+        adapter=new MessageAdapter(messageActivityViewModel.getmMessages().getValue(),senderEmail);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager mLayoutManager=new LinearLayoutManager(this);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -146,9 +146,35 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e(TAG, "onStart: ");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(TAG, "onResume: ");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause: ");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.e(TAG, "onStop: ");
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.e(TAG, "onDestroy: ");
         mSocket.disconnect();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.demochatapp.Retrofit;
+package com.example.demochatapp.Service.Retrofit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

@@ -1,4 +1,4 @@
-package com.example.demochatapp.Retrofit;
+package com.example.demochatapp.Service.Models;
 
 public class Profile {
     private String status;
