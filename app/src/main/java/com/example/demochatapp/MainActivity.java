@@ -74,11 +74,15 @@ public class MainActivity extends AppCompatActivity {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Toast.makeText(this,"Request Denied",Toast.LENGTH_SHORT).show();
-                    finish();
+                    killActivity();
                 }
                 return;
             }
         }
+    }
+
+    private void killActivity() {
+        finish();
     }
 
     private void login()
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
             intent.putExtra("email", session.getValue("email"));
             startActivity(intent);
-            finish();
+            killActivity();
         }
         else
         {
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
                                 intent.putExtra("email", email);
                                 startActivity(intent);
-                                finish();
+                                killActivity();
                             }
                         }
                         @Override

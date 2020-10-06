@@ -107,7 +107,17 @@ public class ContactsActivity extends AppCompatActivity {
         session.killSession();
         Intent intent = new Intent(ContactsActivity.this, MainActivity.class);
         startActivity(intent);
+        killActivity();
+    }
+
+    private void killActivity() {
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        killActivity();
     }
 
     @Override
