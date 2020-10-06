@@ -12,6 +12,8 @@
         android:id="@+id/contactName"
         android:layout_centerVertical="true"
         android:layout_width="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:layout_height="32dp"
         android:text="NAME"
         android:layout_margin="16dp"

@@ -32,6 +32,13 @@ public class MessageActivityViewModel extends ViewModel {
         return mMessages;
     }
 
+    public void addNewValue(Message message)
+    {
+        ArrayList<Message> msg=mMessages.getValue();
+        msg.add(message);
+        mMessages.setValue(msg);
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();

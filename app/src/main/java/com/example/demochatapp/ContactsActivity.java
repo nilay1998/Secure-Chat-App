@@ -22,7 +22,9 @@ import com.example.demochatapp.Adapters.ContactsAdapter;
 import com.example.demochatapp.Service.Models.Contacts;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Retrofit.RequestService;
+import com.example.demochatapp.Util.SocketHelper;
 import com.example.demochatapp.ViewModels.ContactsActivityViewModel;
+import com.github.nkzawa.socketio.client.Socket;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class ContactsActivity extends AppCompatActivity {
     ContactsAdapter adapter;
     private Sessions session;
     private ContactsActivityViewModel contactsActivityViewModel;
+    private Socket mSocket;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -55,6 +58,7 @@ public class ContactsActivity extends AppCompatActivity {
 
         final Intent intent=getIntent();
         user_email=intent.getStringExtra("email");
+        mSocket=SocketHelper.getInstance().getSocketConnection();
 
         contactsActivityViewModel =new ViewModelProvider(this).get(ContactsActivityViewModel.class);
         contactsActivityViewModel.init(getApplicationContext());
@@ -66,8 +70,14 @@ public class ContactsActivity extends AppCompatActivity {
             }
         });
         initRecyclerView();
+        initSocketConnection();
     }
 
+    private void initSocketConnection() {
+        mSocket= SocketHelper.getInstance().getSocketConnection();
+        mSocket.connect();
+        mSocket.emit("join",user_email);
+    }
     private void initRecyclerView() {
         adapter=new ContactsAdapter(this,contactsActivityViewModel.getmContacts().getValue(),user_email);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -127,6 +137,7 @@ public class ContactsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mSocket.disconnect();
         Log.e(TAG, "onDestroy: ");
     }
 }

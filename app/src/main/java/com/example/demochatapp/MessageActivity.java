@@ -17,6 +17,7 @@ import com.example.demochatapp.Adapters.MessageAdapter;
 import com.example.demochatapp.Service.Models.Message;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Retrofit.RequestService;
+import com.example.demochatapp.Util.SocketHelper;
 import com.example.demochatapp.ViewModels.MessageActivityViewModel;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -64,9 +65,6 @@ public class MessageActivity extends AppCompatActivity {
         receiverName=intent.getStringExtra("receiverName");
         senderEmail=intent.getStringExtra("senderEmail");
 
-
-        run_socket();
-
         messageActivityViewModel=new ViewModelProvider(this).get(MessageActivityViewModel.class);
         messageActivityViewModel.init(senderEmail,receiverEmail);
         messageActivityViewModel.getmMessages().observe(this, new Observer<ArrayList<Message>>() {
@@ -79,6 +77,7 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         initviews();
+        run_socket();
     }
 
 
@@ -99,9 +98,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void run_socket()
     {
-        mSocket.connect();
-        mSocket.emit("join",senderEmail);
-
+        mSocket= SocketHelper.getInstance().getSocketConnection();
         send_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,9 +106,7 @@ public class MessageActivity extends AppCompatActivity {
                 if(!msg.isEmpty() || msg.equals("")) {
                     mSocket.emit("messagedetection", senderEmail, receiverEmail, msg);
                     Message m=new Message(senderEmail,msg,receiverEmail);
-                    messageArrayList.add(m);
-                    recyclerView.smoothScrollToPosition(adapter.getItemCount());
-                    adapter.notifyDataSetChanged();
+                    messageActivityViewModel.addNewValue(m);
                     Log.e(TAG, "onClick: "+msg+" : sent to :"+receiverEmail);
                 }
                 msg_editText.setText("");
@@ -135,8 +130,7 @@ public class MessageActivity extends AppCompatActivity {
                             Log.e(TAG, "Receiver: "+receiver);
                             Message m=new Message(sender,msg,receiver);
                             messageArrayList.add(m);
-                            recyclerView.smoothScrollToPosition(adapter.getItemCount());
-                            adapter.notifyDataSetChanged();
+                            messageActivityViewModel.addNewValue(m);
                         }
                         catch (JSONException e) {
                             e.printStackTrace();
@@ -175,6 +169,5 @@ public class MessageActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.e(TAG, "onDestroy: ");
-        mSocket.disconnect();
     }
 }

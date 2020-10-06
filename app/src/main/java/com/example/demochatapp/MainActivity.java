@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Models.Profile;
 import com.example.demochatapp.Service.Retrofit.RequestService;
+import com.example.demochatapp.Util.SocketHelper;
+import com.github.nkzawa.socketio.client.Socket;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Button submit_button;
     private Button signIn_button;
     private Sessions session;
+    private Socket mSocket;
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+
 
     private void initViews()
     {
