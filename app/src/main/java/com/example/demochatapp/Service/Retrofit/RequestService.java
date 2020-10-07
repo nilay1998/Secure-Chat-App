@@ -25,8 +25,10 @@ public interface RequestService
                                @Field("email") String email,
                                @Field("password") String password,
                                @Field("phone") String phone);
-    @GET("getContacts")
-    Call<ArrayList<Contacts>> getDatabaseContacts(@Query("phone") String[] phone);
+
+    @POST("getContacts")
+    @FormUrlEncoded
+    Call<ArrayList<Contacts>> getDatabaseContacts(@Field("phone") String[] phone);
 
     @GET("getMessages")
     Call<ArrayList<Message>> getMessages(@Query("sender") String sender, @Query("receiver") String receiver);

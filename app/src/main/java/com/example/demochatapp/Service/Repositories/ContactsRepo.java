@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -56,19 +57,23 @@ public class ContactsRepo {
         call.enqueue(new Callback<ArrayList<Contacts>>() {
             @Override
             public void onResponse(Call<ArrayList<Contacts>> call, Response<ArrayList<Contacts>> response) {
-                contactsInDatabse.addAll(response.body());
-                for(int i=0;i<contactsInDatabse.size();i++)
+                Log.e(TAG, "onResponse: "+ response.code());
+                if(response.isSuccessful() && response.code()==200 && response.body()!=null)
                 {
-                    Contacts curr=contactsInDatabse.get(i);
-                    curr.setName(phoneContacts.get(curr.getPhone()));
-                    Log.e(TAG, "onResponse: "+curr.getName()+" "+curr.getPhone());
+                    contactsInDatabse.addAll(response.body());
+                    for(int i=0;i<contactsInDatabse.size();i++)
+                    {
+                        Contacts curr=contactsInDatabse.get(i);
+                        curr.setName(phoneContacts.get(curr.getPhone()));
+                        Log.e(TAG, "onResponse: "+curr.getName()+" "+curr.getPhone());
+                    }
+                    data.setValue(contactsInDatabse);
                 }
-                data.setValue(contactsInDatabse);
             }
 
             @Override
             public void onFailure(Call<ArrayList<Contacts>> call, Throwable t) {
-                Log.e(TAG, "onFailure: ");
+                Log.e(TAG, "onFailure: "+t.getMessage());
             }
         });
 

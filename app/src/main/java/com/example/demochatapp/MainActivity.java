@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Button submit_button;
     private Button signIn_button;
     private Sessions session;
-    private Socket mSocket;
+    private ProgressBar progressBar;
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
             submit_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    progressBar.setVisibility(View.VISIBLE);
                     final String email=email_editText.getText().toString();
                     final String password=password_ediText.getText().toString();
                     Retrofit retrofit = NetworkClient.getRetrofitClient();
@@ -117,11 +119,13 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
                                 intent.putExtra("email", email);
                                 startActivity(intent);
+                                progressBar.setVisibility(View.INVISIBLE);
                                 killActivity();
                             }
                         }
                         @Override
                         public void onFailure(Call<Profile> call, Throwable t) {
+                            progressBar.setVisibility(View.INVISIBLE);
                             Toast.makeText(getApplicationContext(),t.getMessage(),Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -134,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews()
     {
+        progressBar=findViewById(R.id.progressBar);
         email_editText=findViewById(R.id.email_et);
         password_ediText=findViewById(R.id.password_et);
         submit_button=findViewById(R.id.submit_button);

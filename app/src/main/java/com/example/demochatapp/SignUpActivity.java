@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
@@ -25,6 +26,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText password_ET;
     private EditText phone_ET;
     private Button submit_BT;
+    private ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +40,7 @@ public class SignUpActivity extends AppCompatActivity {
         submit_BT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
                 String name=name_ET.getText().toString().trim();
                 final String email=email_ET.getText().toString().trim();
                 String password=password_ET.getText().toString().trim();
@@ -51,6 +54,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),response.body().getMessage(),Toast.LENGTH_SHORT).show();
                         if(response.body().getStatus().equals("1"))
                         {
+                            progressBar.setVisibility(View.INVISIBLE);
                             Intent intent = new Intent(SignUpActivity.this, ContactsActivity.class);
                             intent.putExtra("email", email);
                             startActivity(intent);
@@ -68,6 +72,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        progressBar=findViewById(R.id.progressBar);
         name_ET=findViewById(R.id.signup_name);
         email_ET=findViewById(R.id.signup_email);
         password_ET=findViewById(R.id.signup_password);

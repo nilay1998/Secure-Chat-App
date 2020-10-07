@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.demochatapp.Adapters.ContactsAdapter;
 import com.example.demochatapp.Service.Models.Contacts;
@@ -47,6 +49,7 @@ public class ContactsActivity extends AppCompatActivity {
     private Sessions session;
     private ContactsActivityViewModel contactsActivityViewModel;
     private Socket mSocket;
+    ProgressBar progressBar;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -55,6 +58,7 @@ public class ContactsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         Log.e(TAG, "onCreate: ");
         recyclerView=findViewById(R.id.contactsList);
+        progressBar=findViewById(R.id.progressBar);
 
         final Intent intent=getIntent();
         user_email=intent.getStringExtra("email");
@@ -66,6 +70,10 @@ public class ContactsActivity extends AppCompatActivity {
             @Override
             public void onChanged(ArrayList<Contacts> contacts) {
                 Log.e(TAG, "onChanged: ViewModel "+contacts.size());
+                if(contacts.size()==0)
+                    progressBar.setVisibility(View.VISIBLE);
+                else
+                    progressBar.setVisibility(View.INVISIBLE);
                 adapter.notifyDataSetChanged();
             }
         });
