@@ -32,4 +32,7 @@ public interface RequestService
 
     @GET("getMessages")
     Call<ArrayList<Message>> getMessages(@Query("sender") String sender, @Query("receiver") String receiver);
+
+    @GET("getSocketID")
+    Call<Profile> getSocketID(@Query("email") String email);
 }

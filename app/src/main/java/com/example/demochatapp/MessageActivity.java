@@ -48,6 +48,8 @@ public class MessageActivity extends AppCompatActivity {
     private ArrayList<Message> messageArrayList=new ArrayList<>();
     private MessageActivityViewModel messageActivityViewModel;
     private static final String TAG = "MessageActivity";
+    private String receiverSocketID;
+    private ProgressBar progressBar;
 
     {
         try {
@@ -60,6 +62,8 @@ public class MessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+        progressBar=findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         Intent intent=getIntent();
         receiverEmail=intent.getStringExtra("receiverEmail");
@@ -74,6 +78,14 @@ public class MessageActivity extends AppCompatActivity {
                 Log.e(TAG, "onChanged: ");
                 recyclerView.smoothScrollToPosition(adapter.getItemCount());
                 adapter.notifyDataSetChanged();
+            }
+        });
+        messageActivityViewModel.getReceiverSocketID().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if(s.length()>0)
+                    progressBar.setVisibility(View.INVISIBLE);
+                receiverSocketID=s;
             }
         });
 
@@ -105,7 +117,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String msg=msg_editText.getText().toString().trim();
                 if(!msg.isEmpty() || msg.equals("")) {
-                    mSocket.emit("messagedetection", senderEmail, receiverEmail, msg);
+                    mSocket.emit("messagedetection", senderEmail, receiverEmail, msg,receiverSocketID);
                     Message m=new Message(senderEmail,msg,receiverEmail);
                     messageActivityViewModel.addNewValue(m);
                     Log.e(TAG, "onClick: "+msg+" : sent to :"+receiverEmail);

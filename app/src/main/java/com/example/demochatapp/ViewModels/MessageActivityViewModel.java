@@ -17,6 +17,7 @@ public class MessageActivityViewModel extends ViewModel {
     private MessageRepo mRepo;
     private String senderEmail;
     private String receiverEmail;
+    private MutableLiveData<String> receiverSocketID;
     public void init(String sender,String receiver)
     {
         if(mMessages!=null)
@@ -25,7 +26,12 @@ public class MessageActivityViewModel extends ViewModel {
         mRepo=MessageRepo.getInstance();
         senderEmail=sender;
         receiverEmail=receiver;
+        receiverSocketID=mRepo.getSocketID(receiverEmail);
         mMessages=mRepo.getmMessages(senderEmail,receiverEmail);
+    }
+
+    public LiveData<String> getReceiverSocketID() {
+        return receiverSocketID;
     }
 
     public LiveData<ArrayList<Message>> getmMessages() {

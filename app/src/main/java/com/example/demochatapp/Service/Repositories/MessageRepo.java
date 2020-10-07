@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.demochatapp.Service.Models.Contacts;
 import com.example.demochatapp.Service.Models.Message;
+import com.example.demochatapp.Service.Models.Profile;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Retrofit.RequestService;
 
@@ -28,6 +29,29 @@ public class MessageRepo {
         return instance;
     }
 
+    public MutableLiveData<String> getSocketID(String email)
+    {
+        MutableLiveData<String> data=new MutableLiveData<>();
+        data.setValue("");
+        Retrofit retrofit=NetworkClient.getRetrofitClient();
+        RequestService requestService=retrofit.create(RequestService.class);
+        Call<Profile> call=requestService.getSocketID(email);
+        call.enqueue(new Callback<Profile>() {
+            @Override
+            public void onResponse(Call<Profile> call, Response<Profile> response) {
+                Log.e(TAG, "onResponse: "+response.body());
+                data.setValue(response.body().getSocketID());
+            }
+
+            @Override
+            public void onFailure(Call<Profile> call, Throwable t) {
+                Log.e(TAG, "onFailure: SSSS"+t.getMessage());
+            }
+        });
+
+        return data;
+    }
+
     public MutableLiveData<ArrayList<Message>> getmMessages(String senderEmail,String receiverEmail) {
         MutableLiveData<ArrayList<Message>> data=new MutableLiveData<>();
 
@@ -47,7 +71,7 @@ public class MessageRepo {
 
             @Override
             public void onFailure(Call<ArrayList<Message>> call, Throwable t) {
-                Log.e(TAG, "onFailure: ");
+                Log.e(TAG, "onFailure: "+t.getMessage());
             }
         });
 

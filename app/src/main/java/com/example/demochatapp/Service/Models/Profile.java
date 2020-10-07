@@ -5,6 +5,15 @@ public class Profile {
     private String message;
     private String name;
     private String email;
+    private String socketID;
+
+    public String getSocketID() {
+        return socketID;
+    }
+
+    public void setSocketID(String socketID) {
+        this.socketID = socketID;
+    }
 
     public String getName() {
         return name;
