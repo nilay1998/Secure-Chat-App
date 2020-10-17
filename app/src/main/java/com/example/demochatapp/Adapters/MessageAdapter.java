@@ -1,5 +1,6 @@
 package com.example.demochatapp.Adapters;
 
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,23 +9,33 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.demochatapp.R;
 import com.example.demochatapp.Service.Models.Message;
+import com.example.demochatapp.Util.RSAUtil;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class MessageAdapter extends RecyclerView.Adapter {
     private ArrayList<Message> messagesList = new ArrayList<>();
     static String email = "";
+    private String privateKey="";
 
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
-    public MessageAdapter(ArrayList<Message> m, String e) {
+    public MessageAdapter(ArrayList<Message> m, String e,String p) {
         messagesList = m;
         email = e;
+        privateKey=p;
     }
 
     @Override
@@ -57,15 +68,32 @@ public class MessageAdapter extends RecyclerView.Adapter {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+
+        String msg= null;
+        try {
+            msg = RSAUtil.decrypt(messagesList.get(position).getMessage(),privateKey);
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_MESSAGE_SENT:
-                ((SentMessageHolder) holder).message.setText(messagesList.get(position).getMessage());
+                ((SentMessageHolder) holder).message.setText(msg);
                 //((SentMessageHolder) holder).name.setText(messagesList.get(position).getNickname());
                 break;
             case VIEW_TYPE_MESSAGE_RECEIVED:
-                ((ReceivedMessageHolder) holder).message.setText(messagesList.get(position).getMessage());
+                ((ReceivedMessageHolder) holder).message.setText(msg);
                 //((ReceivedMessageHolder) holder).name.setText(messagesList.get(position).getNickname());
         }
     }

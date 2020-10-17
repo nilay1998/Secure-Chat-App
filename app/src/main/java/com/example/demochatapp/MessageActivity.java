@@ -1,5 +1,6 @@
 package com.example.demochatapp;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +20,7 @@ import com.example.demochatapp.Adapters.MessageAdapter;
 import com.example.demochatapp.Service.Models.Message;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Retrofit.RequestService;
+import com.example.demochatapp.Util.RSAUtil;
 import com.example.demochatapp.Util.SocketHelper;
 import com.example.demochatapp.ViewModels.MessageActivityViewModel;
 import com.github.nkzawa.emitter.Emitter;
@@ -28,7 +31,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,15 +59,10 @@ public class MessageActivity extends AppCompatActivity {
     private MessageActivityViewModel messageActivityViewModel;
     private static final String TAG = "MessageActivity";
     private String receiverSocketID;
+    private String reveiverPublicKey;
+    private String senderPrivateKey;
     private ProgressBar progressBar;
 
-    {
-        try {
-            mSocket = IO.socket("http://192.168.0.104:3000");
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "instance initializer: ERROR");
-        }
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +74,7 @@ public class MessageActivity extends AppCompatActivity {
         receiverEmail=intent.getStringExtra("receiverEmail");
         receiverName=intent.getStringExtra("receiverName");
         senderEmail=intent.getStringExtra("senderEmail");
+        senderPrivateKey=intent.getStringExtra("privateKey");
 
         messageActivityViewModel=new ViewModelProvider(this).get(MessageActivityViewModel.class);
         messageActivityViewModel.init(senderEmail,receiverEmail);
@@ -88,6 +94,12 @@ public class MessageActivity extends AppCompatActivity {
                 receiverSocketID=s;
             }
         });
+        messageActivityViewModel.getReveiverPublicKey().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                reveiverPublicKey=s;
+            }
+        });
 
         initviews();
         run_socket();
@@ -100,7 +112,7 @@ public class MessageActivity extends AppCompatActivity {
         send_button=findViewById(R.id.send);
 
         recyclerView=findViewById(R.id.messageList);
-        adapter=new MessageAdapter(messageActivityViewModel.getmMessages().getValue(),senderEmail);
+        adapter=new MessageAdapter(messageActivityViewModel.getmMessages().getValue(),senderEmail,senderPrivateKey);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager mLayoutManager=new LinearLayoutManager(this);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -113,14 +125,30 @@ public class MessageActivity extends AppCompatActivity {
     {
         mSocket= SocketHelper.getInstance().getSocketConnection();
         send_button.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 String msg=msg_editText.getText().toString().trim();
                 if(!msg.isEmpty() || msg.equals("")) {
-                    mSocket.emit("messagedetection", senderEmail, receiverEmail, msg,receiverSocketID);
-                    Message m=new Message(senderEmail,msg,receiverEmail);
-                    messageActivityViewModel.addNewValue(m);
-                    Log.e(TAG, "onClick: "+msg+" : sent to :"+receiverEmail);
+
+                    try {
+                        String encrypted_msg= Base64.getEncoder().encodeToString(RSAUtil.encrypt(msg,reveiverPublicKey));
+                        mSocket.emit("messagedetection", senderEmail, receiverEmail, encrypted_msg,receiverSocketID);
+                        Message m=new Message(senderEmail,encrypted_msg,receiverEmail);
+                        messageActivityViewModel.addNewValue(m);
+                        Log.e(TAG, "onClick: "+msg+" : sent to :"+receiverEmail);
+
+                    } catch (BadPaddingException e) {
+                        e.printStackTrace();
+                    } catch (IllegalBlockSizeException e) {
+                        e.printStackTrace();
+                    } catch (InvalidKeyException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchPaddingException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
                 }
                 msg_editText.setText("");
             }
@@ -130,6 +158,7 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void call(final Object... args) {
                 runOnUiThread(new Runnable() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void run() {
                         JSONObject data = (JSONObject) args[0];
@@ -141,11 +170,23 @@ public class MessageActivity extends AppCompatActivity {
                             Log.e(TAG, "Message: "+msg);
                             String receiver=data.getString("receiver");
                             Log.e(TAG, "Receiver: "+receiver);
+                            msg=RSAUtil.decrypt(msg,senderPrivateKey);
                             Message m=new Message(sender,msg,receiver);
                             messageArrayList.add(m);
                             messageActivityViewModel.addNewValue(m);
                         }
+
                         catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
                             e.printStackTrace();
                         }
                     }

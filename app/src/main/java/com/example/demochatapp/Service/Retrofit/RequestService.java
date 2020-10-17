@@ -11,6 +11,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface RequestService
@@ -35,4 +36,11 @@ public interface RequestService
 
     @GET("getSocketID")
     Call<Profile> getSocketID(@Query("email") String email);
+
+    @GET("getPublicKey")
+    Call<Profile> getPublicKey(@Query("email") String email);
+
+    @PUT("setPublicKey")
+    @FormUrlEncoded
+    Call<Profile> setPublicKey(@Field("publickey") String publicKey,@Field("email") String email);
 }

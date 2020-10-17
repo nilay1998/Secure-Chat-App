@@ -8,7 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkClient {
 
 
-    public static String BASE_URL = "https://serene-sierra-89225.herokuapp.com/user/";
+    //public static String BASE_URL = "https://serene-sierra-89225.herokuapp.com/user/";
+    public static String BASE_URL = "http://192.168.0.104:3000/user/";
     public static Retrofit retrofit;
     /*
     This public static method will return Retrofit client

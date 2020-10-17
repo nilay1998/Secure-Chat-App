@@ -62,16 +62,21 @@ public class RSAUtil {
     }
     
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String encrypt(String data, String publicKey) throws BadPaddingException, IllegalBlockSizeException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
+    public static byte[] encrypt(String data, String base64PublicKey) throws BadPaddingException, IllegalBlockSizeException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, getPublicKey(publicKey));
-        return new String(cipher.doFinal(data.getBytes()));
+        cipher.init(Cipher.ENCRYPT_MODE, getPublicKey(base64PublicKey));
+        return cipher.doFinal(data.getBytes());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static String decrypt(String data, String privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public static String decrypt(String data, String base64PrivateKey) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
+        return decrypt(Base64.getDecoder().decode(data.getBytes()), base64PrivateKey);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private static String decrypt(byte[] data, String base64PrivateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(privateKey));
-        return new String(cipher.doFinal(data.getBytes()));
+        cipher.init(Cipher.DECRYPT_MODE, getPrivateKey(base64PrivateKey));
+        return new String(cipher.doFinal(data));
     }
 }

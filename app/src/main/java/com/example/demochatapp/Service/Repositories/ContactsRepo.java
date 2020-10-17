@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.demochatapp.Adapters.ContactsAdapter;
 import com.example.demochatapp.Service.Models.Contacts;
+import com.example.demochatapp.Service.Models.Profile;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Retrofit.RequestService;
 
@@ -34,6 +35,23 @@ public class ContactsRepo {
         if(instance==null)
             instance=new ContactsRepo();
         return instance;
+    }
+
+    public void addPublicKeyToDatabase(String publicKey,String user_email) {
+        Retrofit retrofit=NetworkClient.getRetrofitClient();
+        RequestService requestService=retrofit.create(RequestService.class);
+        Call<Profile> call=requestService.setPublicKey(publicKey,user_email);
+        call.enqueue(new Callback<Profile>() {
+            @Override
+            public void onResponse(Call<Profile> call, Response<Profile> response) {
+                Log.e(TAG, "onResponse: "+response.body().getMessage());
+            }
+
+            @Override
+            public void onFailure(Call<Profile> call, Throwable t) {
+                Log.e(TAG, "onFailure: "+t.getMessage());
+            }
+        });
     }
 
     public MutableLiveData<ArrayList<Contacts>> getMachingContacts(Context context)

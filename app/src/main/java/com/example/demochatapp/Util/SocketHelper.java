@@ -16,7 +16,8 @@ public class SocketHelper {
     private SocketHelper(){
         {
             try {
-                mSocket = IO.socket("https://serene-sierra-89225.herokuapp.com");
+                //mSocket = IO.socket("https://serene-sierra-89225.herokuapp.com");
+                mSocket = IO.socket("http://192.168.0.104:3000");
             } catch (URISyntaxException e) {
                 Log.e(TAG, "instance initializer: ERROR");
             }

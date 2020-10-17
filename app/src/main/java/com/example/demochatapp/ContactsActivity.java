@@ -22,12 +22,15 @@ import android.widget.ProgressBar;
 
 import com.example.demochatapp.Adapters.ContactsAdapter;
 import com.example.demochatapp.Service.Models.Contacts;
+import com.example.demochatapp.Service.Models.Profile;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Retrofit.RequestService;
+import com.example.demochatapp.Util.RSAKeyPairGenerator;
 import com.example.demochatapp.Util.SocketHelper;
 import com.example.demochatapp.ViewModels.ContactsActivityViewModel;
 import com.github.nkzawa.socketio.client.Socket;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,9 +52,11 @@ public class ContactsActivity extends AppCompatActivity {
     private Sessions session;
     private ContactsActivityViewModel contactsActivityViewModel;
     private Socket mSocket;
+    private String publicKey;
+    private String privateKey;
     ProgressBar progressBar;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,9 +82,36 @@ public class ContactsActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         });
+
+        try {
+            generateKeys();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         initRecyclerView();
         initSocketConnection();
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void generateKeys() throws NoSuchAlgorithmException {
+        session=new Sessions(getApplicationContext());
+        if(!session.getValue("publicKey").equals("-1")) {
+            publicKey = session.getValue("publicKey");
+            privateKey = session.getValue("privateKey");
+        }
+        else
+        {
+            RSAKeyPairGenerator rsaKeyPairGenerator=new RSAKeyPairGenerator();
+            publicKey=rsaKeyPairGenerator.getPublicKey();
+            privateKey=rsaKeyPairGenerator.getPrivateKey();
+            session.setValue("publicKey",publicKey);
+            session.setValue("privateKey",privateKey);
+
+            contactsActivityViewModel.addPublicKeyToDatabase(publicKey,user_email);
+        }
+    }
+
+
 
     private void initSocketConnection() {
         mSocket= SocketHelper.getInstance().getSocketConnection();
@@ -87,7 +119,7 @@ public class ContactsActivity extends AppCompatActivity {
         mSocket.emit("join",user_email);
     }
     private void initRecyclerView() {
-        adapter=new ContactsAdapter(this,contactsActivityViewModel.getmContacts().getValue(),user_email);
+        adapter=new ContactsAdapter(this,contactsActivityViewModel.getmContacts().getValue(),user_email,privateKey);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
     }
@@ -111,7 +143,7 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        session=new Sessions(getApplicationContext());
+
         session.killSession();
         Intent intent = new Intent(ContactsActivity.this, MainActivity.class);
         startActivity(intent);

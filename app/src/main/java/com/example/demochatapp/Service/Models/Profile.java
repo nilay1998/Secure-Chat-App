@@ -6,6 +6,15 @@ public class Profile {
     private String name;
     private String email;
     private String socketID;
+    private String publickey;
+
+    public String getPublickey() {
+        return publickey;
+    }
+
+    public void setPublickey(String publickey) {
+        this.publickey = publickey;
+    }
 
     public String getSocketID() {
         return socketID;

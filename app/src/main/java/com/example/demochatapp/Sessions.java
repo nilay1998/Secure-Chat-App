@@ -16,30 +16,30 @@ public class Sessions {
         editor = pref.edit();
     }
 
-    void createSession()
+    public void createSession()
     {
         editor.putBoolean(IS_LOGIN, true);
         editor.commit();
     }
 
-    void killSession()
+    public void killSession()
     {
         editor.putBoolean(IS_LOGIN, false);
         editor.clear();
         editor.commit();
     }
 
-    boolean isLoggedIn(){
+    public boolean isLoggedIn(){
         return pref.getBoolean(IS_LOGIN, false);
     }
 
-    void setValue(String key,String value)
+    public void setValue(String key,String value)
     {
         editor.putString(key,value);
         editor.commit();
     }
 
-    String getValue(String key)
+    public String getValue(String key)
     {
         return pref.getString(key,"-1");
     }
