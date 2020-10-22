@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.demochatapp.R;
 import com.example.demochatapp.Service.Models.Message;
+import com.example.demochatapp.Util.AESUtil;
 import com.example.demochatapp.Util.RSAUtil;
 
 import java.security.InvalidKeyException;
@@ -28,14 +29,16 @@ public class MessageAdapter extends RecyclerView.Adapter {
     private ArrayList<Message> messagesList = new ArrayList<>();
     static String email = "";
     private String privateKey="";
+    private byte[] sharedSecretKey_AES;
 
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
-    public MessageAdapter(ArrayList<Message> m, String e,String p) {
+    public MessageAdapter(ArrayList<Message> m, String e,String p,byte[] ss) {
         messagesList = m;
         email = e;
         privateKey=p;
+        sharedSecretKey_AES=ss;
     }
 
     @Override
@@ -74,18 +77,24 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         String msg= null;
         try {
-            msg = RSAUtil.decrypt(messagesList.get(position).getMessage(),privateKey);
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
+
+            //msg = RSAUtil.decrypt(messagesList.get(position).getMessage(),privateKey);
+            msg = AESUtil.decrypt(messagesList.get(position).getMessage(),sharedSecretKey_AES);
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
+//        catch (NoSuchPaddingException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        } catch (InvalidKeyException e) {
+//            e.printStackTrace();
+//        } catch (BadPaddingException e) {
+//            e.printStackTrace();
+//        } catch (IllegalBlockSizeException e) {
+//            e.printStackTrace();
+//        }
 
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_MESSAGE_SENT:

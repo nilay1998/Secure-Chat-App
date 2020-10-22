@@ -24,12 +24,12 @@ public class RSAKeyPairGenerator {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String getPrivateKey() {
+    public String getPrivateKey_RSA() {
         return (Base64.getEncoder().encodeToString(privateKey.getEncoded()));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String getPublicKey() {
+    public String getPublicKey_RSA() {
         return Base64.getEncoder().encodeToString(publicKey.getEncoded());
     }
 }

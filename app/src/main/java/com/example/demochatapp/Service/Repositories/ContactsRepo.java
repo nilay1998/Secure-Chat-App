@@ -37,10 +37,27 @@ public class ContactsRepo {
         return instance;
     }
 
-    public void addPublicKeyToDatabase(String publicKey,String user_email) {
+    public void addRSAPublicKeyToDatabase(String publicKey,String user_email) {
         Retrofit retrofit=NetworkClient.getRetrofitClient();
         RequestService requestService=retrofit.create(RequestService.class);
-        Call<Profile> call=requestService.setPublicKey(publicKey,user_email);
+        Call<Profile> call=requestService.setPublicKeyRSA(publicKey,user_email);
+        call.enqueue(new Callback<Profile>() {
+            @Override
+            public void onResponse(Call<Profile> call, Response<Profile> response) {
+                Log.e(TAG, "onResponse: "+response.body().getMessage());
+            }
+
+            @Override
+            public void onFailure(Call<Profile> call, Throwable t) {
+                Log.e(TAG, "onFailure: "+t.getMessage());
+            }
+        });
+    }
+
+    public void addAESPublicKeyToDatabase(String publicKey,String user_email) {
+        Retrofit retrofit=NetworkClient.getRetrofitClient();
+        RequestService requestService=retrofit.create(RequestService.class);
+        Call<Profile> call=requestService.setPublicKeyAES(publicKey,user_email);
         call.enqueue(new Callback<Profile>() {
             @Override
             public void onResponse(Call<Profile> call, Response<Profile> response) {

@@ -23,13 +23,15 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     Context mContext;
     ArrayList<Contacts> mUserContacts;
     String mUserEmail;
-    String mPrivateKey;
-    public ContactsAdapter(Context mContext, ArrayList<Contacts> mUserContacts, String mUserEmail,String mPrivateKey)
+    String mPrivateKey_RSA;
+    String mPrivateKey_AES;
+    public ContactsAdapter(Context mContext, ArrayList<Contacts> mUserContacts, String mUserEmail,String mPrivateKey,String aa)
     {
         this.mContext=mContext;
         this.mUserContacts=mUserContacts;
         this.mUserEmail=mUserEmail;
-        this.mPrivateKey=mPrivateKey;
+        this.mPrivateKey_RSA=mPrivateKey;
+        mPrivateKey_AES=aa;
     }
     @NonNull
     @Override
@@ -50,7 +52,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                 intent.putExtra("receiverName",mUserContacts.get(position).getName());
                 intent.putExtra("senderEmail",mUserEmail);
                 intent.putExtra("receiverEmail",mUserContacts.get(position).getEmail());
-                intent.putExtra("privateKey",mPrivateKey);
+                intent.putExtra("privateKey_RSA",mPrivateKey_RSA);
+                intent.putExtra("privateKey_AES",mPrivateKey_AES);
                 mContext.startActivity(intent);
             }
         });

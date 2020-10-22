@@ -20,6 +20,7 @@ import com.example.demochatapp.Adapters.MessageAdapter;
 import com.example.demochatapp.Service.Models.Message;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Retrofit.RequestService;
+import com.example.demochatapp.Util.AESUtil;
 import com.example.demochatapp.Util.RSAUtil;
 import com.example.demochatapp.Util.SocketHelper;
 import com.example.demochatapp.ViewModels.MessageActivityViewModel;
@@ -59,8 +60,12 @@ public class MessageActivity extends AppCompatActivity {
     private MessageActivityViewModel messageActivityViewModel;
     private static final String TAG = "MessageActivity";
     private String receiverSocketID;
-    private String reveiverPublicKey;
-    private String senderPrivateKey;
+    private String reveiverPublicKey_RSA;
+    private String senderPrivateKey_RSA;
+
+    private String reveiverPublicKey_AES;
+    private String senderPrivateKey_AES;
+    private byte[] sharedSecretKey_AES;
     private ProgressBar progressBar;
 
     @Override
@@ -74,7 +79,8 @@ public class MessageActivity extends AppCompatActivity {
         receiverEmail=intent.getStringExtra("receiverEmail");
         receiverName=intent.getStringExtra("receiverName");
         senderEmail=intent.getStringExtra("senderEmail");
-        senderPrivateKey=intent.getStringExtra("privateKey");
+        senderPrivateKey_RSA=intent.getStringExtra("privateKey_RSA");
+        senderPrivateKey_AES=intent.getStringExtra("privateKey_AES");
 
         messageActivityViewModel=new ViewModelProvider(this).get(MessageActivityViewModel.class);
         messageActivityViewModel.init(senderEmail,receiverEmail);
@@ -94,10 +100,30 @@ public class MessageActivity extends AppCompatActivity {
                 receiverSocketID=s;
             }
         });
-        messageActivityViewModel.getReveiverPublicKey().observe(this, new Observer<String>() {
+        messageActivityViewModel.getReveiverRSAPublicKey().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                reveiverPublicKey=s;
+                reveiverPublicKey_RSA=s;
+            }
+        });
+
+        messageActivityViewModel.getReveiverAESPublicKey().observe(this, new Observer<String>() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onChanged(String s) {
+                reveiverPublicKey_AES=s;
+                if(s.length()>0)
+                {
+                    try {
+                        sharedSecretKey_AES= AESUtil.getSharedSecretKey(senderPrivateKey_AES,reveiverPublicKey_AES);
+                        adapter=new MessageAdapter(messageActivityViewModel.getmMessages().getValue(),senderEmail,senderPrivateKey_RSA,sharedSecretKey_AES);
+                        recyclerView.setAdapter(adapter);
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    } catch (InvalidKeyException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
@@ -112,7 +138,7 @@ public class MessageActivity extends AppCompatActivity {
         send_button=findViewById(R.id.send);
 
         recyclerView=findViewById(R.id.messageList);
-        adapter=new MessageAdapter(messageActivityViewModel.getmMessages().getValue(),senderEmail,senderPrivateKey);
+        adapter=new MessageAdapter(messageActivityViewModel.getmMessages().getValue(),senderEmail,senderPrivateKey_RSA,sharedSecretKey_AES);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager mLayoutManager=new LinearLayoutManager(this);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -132,23 +158,29 @@ public class MessageActivity extends AppCompatActivity {
                 if(!msg.isEmpty() || msg.equals("")) {
 
                     try {
-                        String encrypted_msg= Base64.getEncoder().encodeToString(RSAUtil.encrypt(msg,reveiverPublicKey));
+//                        String encrypted_msg= Base64.getEncoder().encodeToString(RSAUtil.encrypt(msg,reveiverPublicKey_RSA));
+                        String encrypted_msg= Base64.getEncoder().encodeToString(AESUtil.encrypt(msg,sharedSecretKey_AES));
+
                         mSocket.emit("messagedetection", senderEmail, receiverEmail, encrypted_msg,receiverSocketID);
                         Message m=new Message(senderEmail,encrypted_msg,receiverEmail);
                         messageActivityViewModel.addNewValue(m);
                         Log.e(TAG, "onClick: "+msg+" : sent to :"+receiverEmail);
 
-                    } catch (BadPaddingException e) {
-                        e.printStackTrace();
-                    } catch (IllegalBlockSizeException e) {
-                        e.printStackTrace();
-                    } catch (InvalidKeyException e) {
-                        e.printStackTrace();
-                    } catch (NoSuchPaddingException e) {
-                        e.printStackTrace();
-                    } catch (NoSuchAlgorithmException e) {
+                    }
+                    catch (Exception e){
                         e.printStackTrace();
                     }
+//                    catch (BadPaddingException e) {
+//                        e.printStackTrace();
+//                    } catch (IllegalBlockSizeException e) {
+//                        e.printStackTrace();
+//                    } catch (InvalidKeyException e) {
+//                        e.printStackTrace();
+//                    } catch (NoSuchPaddingException e) {
+//                        e.printStackTrace();
+//                    } catch (NoSuchAlgorithmException e) {
+//                        e.printStackTrace();
+//                    }
                 }
                 msg_editText.setText("");
             }
@@ -170,7 +202,9 @@ public class MessageActivity extends AppCompatActivity {
                             Log.e(TAG, "Message: "+msg);
                             String receiver=data.getString("receiver");
                             Log.e(TAG, "Receiver: "+receiver);
-                            msg=RSAUtil.decrypt(msg,senderPrivateKey);
+
+//                            msg=RSAUtil.decrypt(msg,senderPrivateKey_RSA);
+                            msg=AESUtil.decrypt(msg,sharedSecretKey_AES);
                             Message m=new Message(sender,msg,receiver);
                             messageArrayList.add(m);
                             messageActivityViewModel.addNewValue(m);
@@ -178,17 +212,21 @@ public class MessageActivity extends AppCompatActivity {
 
                         catch (JSONException e) {
                             e.printStackTrace();
-                        } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
-                        } catch (InvalidKeyException e) {
-                            e.printStackTrace();
-                        } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
-                        } catch (BadPaddingException e) {
-                            e.printStackTrace();
-                        } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
                         }
+
+//                        catch (JSONException e) {
+//                            e.printStackTrace();
+//                        } catch (NoSuchAlgorithmException e) {
+//                            e.printStackTrace();
+//                        } catch (InvalidKeyException e) {
+//                            e.printStackTrace();
+//                        } catch (NoSuchPaddingException e) {
+//                            e.printStackTrace();
+//                        } catch (BadPaddingException e) {
+//                            e.printStackTrace();
+//                        } catch (IllegalBlockSizeException e) {
+//                            e.printStackTrace();
+//                        }
                     }
                 });
             }

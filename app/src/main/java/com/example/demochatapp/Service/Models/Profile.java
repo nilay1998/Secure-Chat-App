@@ -6,14 +6,23 @@ public class Profile {
     private String name;
     private String email;
     private String socketID;
-    private String publickey;
+    private String publickeyRSA;
+    private String publickeyAES;
 
-    public String getPublickey() {
-        return publickey;
+    public String getPublickeyRSA() {
+        return publickeyRSA;
     }
 
-    public void setPublickey(String publickey) {
-        this.publickey = publickey;
+    public void setPublickeyRSA(String publickeyRSA) {
+        this.publickeyRSA = publickeyRSA;
+    }
+
+    public String getPublickeyAES() {
+        return publickeyAES;
+    }
+
+    public void setPublickeyAES(String publickeyAES) {
+        this.publickeyAES = publickeyAES;
     }
 
     public String getSocketID() {

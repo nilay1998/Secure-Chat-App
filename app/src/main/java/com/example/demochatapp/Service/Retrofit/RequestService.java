@@ -37,10 +37,17 @@ public interface RequestService
     @GET("getSocketID")
     Call<Profile> getSocketID(@Query("email") String email);
 
-    @GET("getPublicKey")
-    Call<Profile> getPublicKey(@Query("email") String email);
+    @GET("getPublicKeyRSA")
+    Call<Profile> getPublicKeyRSA(@Query("email") String email);
 
-    @PUT("setPublicKey")
+    @PUT("setPublicKeyRSA")
     @FormUrlEncoded
-    Call<Profile> setPublicKey(@Field("publickey") String publicKey,@Field("email") String email);
+    Call<Profile> setPublicKeyRSA(@Field("publickeyRSA") String publicKey,@Field("email") String email);
+
+    @GET("getPublicKeyAES")
+    Call<Profile> getPublicKeyAES(@Query("email") String email);
+
+    @PUT("setPublicKeyAES")
+    @FormUrlEncoded
+    Call<Profile> setPublicKeyAES(@Field("publickeyAES") String publicKey,@Field("email") String email);
 }

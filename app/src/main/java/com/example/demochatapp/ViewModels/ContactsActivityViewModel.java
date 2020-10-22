@@ -39,8 +39,12 @@ public class ContactsActivityViewModel extends ViewModel {
         return mContacts;
     }
 
-     public void addPublicKeyToDatabase(String publicKey,String email) {
-        mRepo.addPublicKeyToDatabase(publicKey,email);
+     public void addRSAPublicKeyToDatabase(String publicKey,String email) {
+        mRepo.addRSAPublicKeyToDatabase(publicKey,email);
+    }
+
+    public void addAESPublicKeyToDatabase(String publicKey,String email) {
+        mRepo.addAESPublicKeyToDatabase(publicKey,email);
     }
 
     @Override
