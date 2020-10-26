@@ -5,6 +5,7 @@ public class Profile {
     private String message;
     private String name;
     private String email;
+    private String phone;
     private String socketID;
     private String publickeyRSA;
     private String publickeyAES;
@@ -23,6 +24,14 @@ public class Profile {
 
     public void setPublickeyAES(String publickeyAES) {
         this.publickeyAES = publickeyAES;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getSocketID() {

@@ -44,4 +44,14 @@ public class Sessions {
         return pref.getString(key,"-1");
     }
 
+    public void setBooleanValue(String key,boolean value)
+    {
+        editor.putBoolean(key,value);
+        editor.commit();
+    }
+
+    public boolean getBooleanValue(String key)
+    {
+        return pref.getBoolean(key,false);
+    }
 }

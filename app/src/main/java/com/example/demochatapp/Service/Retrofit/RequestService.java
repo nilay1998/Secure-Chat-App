@@ -1,6 +1,5 @@
 package com.example.demochatapp.Service.Retrofit;
 
-import com.example.demochatapp.Service.Models.Contacts;
 import com.example.demochatapp.Service.Models.Message;
 import com.example.demochatapp.Service.Models.Profile;
 
@@ -29,7 +28,7 @@ public interface RequestService
 
     @POST("getContacts")
     @FormUrlEncoded
-    Call<ArrayList<Contacts>> getDatabaseContacts(@Field("phone") String[] phone);
+    Call<ArrayList<Profile>> getDatabaseContacts(@Field("phone") String[] phone);
 
     @GET("getMessages")
     Call<ArrayList<Message>> getMessages(@Query("sender") String sender, @Query("receiver") String receiver);

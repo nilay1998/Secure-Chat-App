@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.demochatapp.Service.Models.Contacts;
 import com.example.demochatapp.Service.Models.Message;
 import com.example.demochatapp.Service.Models.Profile;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;

@@ -5,13 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.demochatapp.Adapters.ContactsAdapter;
-import com.example.demochatapp.Service.Models.Contacts;
 import com.example.demochatapp.Service.Models.Profile;
 import com.example.demochatapp.Service.Retrofit.NetworkClient;
 import com.example.demochatapp.Service.Retrofit.RequestService;
@@ -28,7 +24,7 @@ import retrofit2.Retrofit;
 public class ContactsRepo {
     private static final String TAG = "ContactsRepo";
     private static ContactsRepo instance;
-    private ArrayList<Contacts> contactsInDatabse;
+    private ArrayList<Profile> contactsInDatabse;
 
     public static ContactsRepo getInstance()
     {
@@ -71,9 +67,9 @@ public class ContactsRepo {
         });
     }
 
-    public MutableLiveData<ArrayList<Contacts>> getMachingContacts(Context context)
+    public MutableLiveData<ArrayList<Profile>> getMachingContacts(Context context)
     {
-        MutableLiveData<ArrayList<Contacts>> data=new MutableLiveData<>();
+        MutableLiveData<ArrayList<Profile>> data=new MutableLiveData<>();
         contactsInDatabse=new ArrayList<>();
         data.setValue(contactsInDatabse);
         HashMap<String,String> phoneContacts=getPhoneContacts(context);
@@ -88,26 +84,26 @@ public class ContactsRepo {
 
         Retrofit retrofit=NetworkClient.getRetrofitClient();
         RequestService requestService=retrofit.create(RequestService.class);
-        Call<ArrayList<Contacts>> call=requestService.getDatabaseContacts(phoneNumbers);
-        call.enqueue(new Callback<ArrayList<Contacts>>() {
+        Call<ArrayList<Profile>> call=requestService.getDatabaseContacts(phoneNumbers);
+        call.enqueue(new Callback<ArrayList<Profile>>() {
             @Override
-            public void onResponse(Call<ArrayList<Contacts>> call, Response<ArrayList<Contacts>> response) {
+            public void onResponse(Call<ArrayList<Profile>> call, Response<ArrayList<Profile>> response) {
                 Log.e(TAG, "onResponse: "+ response.code());
                 if(response.isSuccessful() && response.code()==200 && response.body()!=null)
                 {
                     contactsInDatabse.addAll(response.body());
                     for(int i=0;i<contactsInDatabse.size();i++)
                     {
-                        Contacts curr=contactsInDatabse.get(i);
+                        Profile curr=contactsInDatabse.get(i);
                         curr.setName(phoneContacts.get(curr.getPhone()));
-                        Log.e(TAG, "onResponse: "+curr.getName()+" "+curr.getPhone());
+                        Log.e(TAG, "onResponse: "+curr.getName()+" "+curr.getPhone()+" "+curr.getSocketID());
                     }
                     data.setValue(contactsInDatabse);
                 }
             }
 
             @Override
-            public void onFailure(Call<ArrayList<Contacts>> call, Throwable t) {
+            public void onFailure(Call<ArrayList<Profile>> call, Throwable t) {
                 Log.e(TAG, "onFailure: "+t.getMessage());
             }
         });

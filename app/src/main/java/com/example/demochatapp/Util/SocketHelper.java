@@ -13,20 +13,23 @@ public class SocketHelper {
     private static final String TAG = "SocketConnection";
     private static SocketHelper instance;
 
-    private SocketHelper(){
+    private SocketHelper(String email){
         {
             try {
                 //mSocket = IO.socket("https://serene-sierra-89225.herokuapp.com");
-                mSocket = IO.socket("http://192.168.0.104:3000");
+
+                IO.Options opts = new IO.Options();
+                opts.query = "custom_id="+email;
+                mSocket = IO.socket("http://192.168.0.104:3000",opts);
             } catch (URISyntaxException e) {
                 Log.e(TAG, "instance initializer: ERROR");
             }
         }
     }
 
-    public static SocketHelper getInstance() {
+    public static SocketHelper getInstance(String email) {
         if(instance==null)
-            instance=new SocketHelper();
+            instance=new SocketHelper(email);
         return instance;
     }
 

@@ -7,12 +7,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +18,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.demochatapp.Adapters.ContactsAdapter;
-import com.example.demochatapp.Service.Models.Contacts;
+import com.example.demochatapp.Service.Models.Profile;
 import com.example.demochatapp.Util.DH_KeyPairGenerator;
 import com.example.demochatapp.Util.RSAKeyPairGenerator;
 import com.example.demochatapp.Util.SocketHelper;
@@ -35,10 +32,7 @@ import java.util.HashMap;
 
 public class ContactsActivity extends AppCompatActivity {
     private final String TAG="ChatAvtivity";
-    private HashMap<String,String> contacts=new HashMap<>();
     private String user_email;
-    private String[] phone;
-    ArrayList<Contacts> contactsInDatabse=new ArrayList<>();
     RecyclerView recyclerView;
     ContactsAdapter adapter;
     private Sessions session;
@@ -62,13 +56,12 @@ public class ContactsActivity extends AppCompatActivity {
 
         final Intent intent=getIntent();
         user_email=intent.getStringExtra("email");
-        mSocket=SocketHelper.getInstance().getSocketConnection();
 
         contactsActivityViewModel =new ViewModelProvider(this).get(ContactsActivityViewModel.class);
         contactsActivityViewModel.init(getApplicationContext());
-        contactsActivityViewModel.getmContacts().observe(this, new Observer<ArrayList<Contacts>>() {
+        contactsActivityViewModel.getmContacts().observe(this, new Observer<ArrayList<Profile>>() {
             @Override
-            public void onChanged(ArrayList<Contacts> contacts) {
+            public void onChanged(ArrayList<Profile> contacts) {
                 Log.e(TAG, "onChanged: ViewModel "+contacts.size());
                 if(contacts.size()==0)
                     progressBar.setVisibility(View.VISIBLE);
@@ -123,7 +116,7 @@ public class ContactsActivity extends AppCompatActivity {
 
 
     private void initSocketConnection() {
-        mSocket= SocketHelper.getInstance().getSocketConnection();
+        mSocket= SocketHelper.getInstance(user_email).getSocketConnection();
         mSocket.connect();
         mSocket.emit("join",user_email);
     }

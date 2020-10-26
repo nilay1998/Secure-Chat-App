@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.demochatapp.MessageActivity;
 import com.example.demochatapp.R;
-import com.example.demochatapp.Service.Models.Contacts;
+import com.example.demochatapp.Service.Models.Profile;
 
 import java.util.ArrayList;
 
@@ -21,11 +21,11 @@ import java.util.ArrayList;
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder>{
 
     Context mContext;
-    ArrayList<Contacts> mUserContacts;
+    ArrayList<Profile> mUserContacts;
     String mUserEmail;
     String mPrivateKey_RSA;
     String mPrivateKey_AES;
-    public ContactsAdapter(Context mContext, ArrayList<Contacts> mUserContacts, String mUserEmail,String mPrivateKey,String aa)
+    public ContactsAdapter(Context mContext, ArrayList<Profile> mUserContacts, String mUserEmail,String mPrivateKey,String aa)
     {
         this.mContext=mContext;
         this.mUserContacts=mUserContacts;

@@ -149,7 +149,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void run_socket()
     {
-        mSocket= SocketHelper.getInstance().getSocketConnection();
+        mSocket= SocketHelper.getInstance(senderEmail).getSocketConnection();
         send_button.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -186,33 +186,53 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        mSocket.on("messageToUser", new Emitter.Listener() {
-            @Override
-            public void call(final Object... args) {
-                runOnUiThread(new Runnable() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @Override
-                    public void run() {
-                        JSONObject data = (JSONObject) args[0];
-                        try
-                        {
-                            String sender=data.getString("sender");
-                            Log.e(TAG, "sender: "+sender);
-                            String msg=data.getString("message");
-                            Log.e(TAG, "Message: "+msg);
-                            String receiver=data.getString("receiver");
-                            Log.e(TAG, "Receiver: "+receiver);
+        mSocket.on("messageToUser", messageToUserEvent);
+
+//        mSocket.on(receiverEmail+"socketUpdate",socketIdUpdationEvent);
+    }
+
+    private Emitter.Listener socketIdUpdationEvent=new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JSONObject data = (JSONObject) args[0];
+            try {
+                receiverSocketID=data.getString("id");
+            }
+
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+
+    private Emitter.Listener messageToUserEvent= new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    try
+                    {
+                        String sender=data.getString("sender");
+                        Log.e(TAG, "sender: "+sender);
+                        String msg=data.getString("message");
+                        Log.e(TAG, "Message: "+msg);
+                        String receiver=data.getString("receiver");
+                        Log.e(TAG, "Receiver: "+receiver);
 
 //                            msg=RSAUtil.decrypt(msg,senderPrivateKey_RSA);
-                            msg=AESUtil.decrypt(msg,sharedSecretKey_AES);
-                            Message m=new Message(sender,msg,receiver);
-                            messageArrayList.add(m);
-                            messageActivityViewModel.addNewValue(m);
-                        }
+                        //msg=AESUtil.decrypt(msg,sharedSecretKey_AES);
+                        Message m=new Message(sender,msg,receiver);
+                        messageArrayList.add(m);
+                        messageActivityViewModel.addNewValue(m);
+                    }
 
-                        catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
 //                        catch (JSONException e) {
 //                            e.printStackTrace();
@@ -227,11 +247,10 @@ public class MessageActivity extends AppCompatActivity {
 //                        } catch (IllegalBlockSizeException e) {
 //                            e.printStackTrace();
 //                        }
-                    }
-                });
-            }
-        });
-    }
+                }
+            });
+        }
+    };
 
     @Override
     protected void onStart() {
@@ -260,6 +279,8 @@ public class MessageActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mSocket.off("messageToUser", messageToUserEvent);
+        mSocket.off(receiverEmail+"socketUpdate",socketIdUpdationEvent);
         Log.e(TAG, "onDestroy: ");
     }
 }
