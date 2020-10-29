@@ -65,8 +65,13 @@ public class ContactsActivity extends AppCompatActivity {
                 Log.e(TAG, "onChanged: ViewModel "+contacts.size());
                 if(contacts.size()==0)
                     progressBar.setVisibility(View.VISIBLE);
-                else
+                else {
                     progressBar.setVisibility(View.INVISIBLE);
+                    String[] email=new String[contacts.size()];
+                    for(int i=0;i<contacts.size();i++)
+                        email[i]=contacts.get(i).getEmail();
+                    mSocket.emit("joinRoom",user_email,email);
+                }
                 adapter.notifyDataSetChanged();
             }
         });
@@ -116,7 +121,9 @@ public class ContactsActivity extends AppCompatActivity {
 
 
     private void initSocketConnection() {
-        mSocket= SocketHelper.getInstance(user_email).getSocketConnection();
+        SocketHelper.setEmail(user_email);
+        SocketHelper socketHelper=SocketHelper.newInstance();
+        mSocket= socketHelper.getSocketConnection();
         mSocket.connect();
         mSocket.emit("join",user_email);
     }
@@ -190,6 +197,7 @@ public class ContactsActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mSocket.disconnect();
-        Log.e(TAG, "onDestroy: ");
+        mSocket.close();
+        Log.e(TAG, "onDestroy: LLLLLLLLLLLLLL");
     }
 }

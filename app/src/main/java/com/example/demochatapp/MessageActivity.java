@@ -149,7 +149,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void run_socket()
     {
-        mSocket= SocketHelper.getInstance(senderEmail).getSocketConnection();
+        mSocket= SocketHelper.getInstance().getSocketConnection();
         send_button.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
