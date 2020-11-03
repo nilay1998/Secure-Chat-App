@@ -51,6 +51,29 @@ public class MessageRepo {
         return data;
     }
 
+    public MutableLiveData<String> getlastSeen(String email)
+    {
+        MutableLiveData<String> data=new MutableLiveData<>();
+        data.setValue("");
+        Retrofit retrofit=NetworkClient.getRetrofitClient();
+        RequestService requestService=retrofit.create(RequestService.class);
+        Call<Profile> call=requestService.getlastSeen(email);
+        call.enqueue(new Callback<Profile>() {
+            @Override
+            public void onResponse(Call<Profile> call, Response<Profile> response) {
+                Log.e(TAG, "onResponse: "+response.body());
+                data.setValue(response.body().getLastSeen());
+            }
+
+            @Override
+            public void onFailure(Call<Profile> call, Throwable t) {
+                Log.e(TAG, "onFailure: SSSS"+t.getMessage());
+            }
+        });
+
+        return data;
+    }
+
     public MutableLiveData<String> getPublicKeyRSA(String email){
         MutableLiveData<String> data=new MutableLiveData<>();
         data.setValue("");

@@ -24,11 +24,16 @@ import com.example.demochatapp.Util.RSAKeyPairGenerator;
 import com.example.demochatapp.Util.SocketHelper;
 import com.example.demochatapp.ViewModels.ContactsActivityViewModel;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 
 public class ContactsActivity extends AppCompatActivity {
     private final String TAG="ChatAvtivity";
@@ -40,6 +45,7 @@ public class ContactsActivity extends AppCompatActivity {
     private Socket mSocket;
     private String publicKeyRSA;
     private String privateKeyRSA;
+    private String[] email;
 
     private String publicKeyAES;
     private String privateKeyAES;
@@ -67,10 +73,16 @@ public class ContactsActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
                 else {
                     progressBar.setVisibility(View.INVISIBLE);
-                    String[] email=new String[contacts.size()];
-                    for(int i=0;i<contacts.size();i++)
+                    email=new String[contacts.size()];
+                    for(int i=0;i<contacts.size();i++){
                         email[i]=contacts.get(i).getEmail();
-                    mSocket.emit("joinRoom",user_email,email);
+                    }
+
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    Gson gson = gsonBuilder.create();
+
+                    Log.e(TAG, "onChanged: ROOM SOCKETS ID "+ gson.toJson(email));
+                    mSocket.emit("joinRoom",user_email,gson.toJson(email));
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -196,8 +208,11 @@ public class ContactsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+//        mSocket.emit("offline",user_email);
+//        mSocket.off();
         mSocket.disconnect();
-        mSocket.close();
+//        mSocket.close();
         Log.e(TAG, "onDestroy: LLLLLLLLLLLLLL");
     }
 }

@@ -9,6 +9,15 @@ public class Profile {
     private String socketID;
     private String publickeyRSA;
     private String publickeyAES;
+    private String lastSeen;
+
+    public String getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(String lastSeen) {
+        this.lastSeen = lastSeen;
+    }
 
     public String getPublickeyRSA() {
         return publickeyRSA;

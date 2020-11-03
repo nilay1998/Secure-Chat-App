@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,42 +8,74 @@
     android:orientation="vertical"
     tools:context=".ContactsActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:textColor="#FFF"
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Evon"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textColor="#FFF"
+                android:id="@+id/user_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Evon"
+                android:textSize="12dp" />
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
+
     <ProgressBar
         android:id="@+id/progressBar"
-        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true"
+        android:visibility="invisible" />
 
     <LinearLayout
         android:id="@+id/recyclerContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/input"
+        android:layout_below="@id/toolbar"
         android:gravity="bottom">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/messageList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>
 
 
     <LinearLayout
         android:id="@+id/input"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
 
         <EditText
-            android:paddingLeft="8dp"
             android:id="@+id/message2"
-            android:layout_weight="3"
             android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
             android:hint="Type a message"
-            android:layout_height="match_parent" />
+            android:paddingLeft="8dp" />
 
         <Button
             android:id="@+id/send"

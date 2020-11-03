@@ -36,6 +36,9 @@ public interface RequestService
     @GET("getSocketID")
     Call<Profile> getSocketID(@Query("email") String email);
 
+    @GET("getlastSeen")
+    Call<Profile> getlastSeen(@Query("email") String email);
+
     @GET("getPublicKeyRSA")
     Call<Profile> getPublicKeyRSA(@Query("email") String email);
 

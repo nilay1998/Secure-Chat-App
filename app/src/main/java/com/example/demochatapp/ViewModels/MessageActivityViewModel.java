@@ -21,6 +21,7 @@ public class MessageActivityViewModel extends ViewModel {
     private MutableLiveData<String> receiverSocketID;
     private MutableLiveData<String> reveiverRSAPublicKey;
     private MutableLiveData<String> reveiverAESPublicKey;
+    private MutableLiveData<String> lastSeen;
 
     public void init(String sender,String receiver)
     {
@@ -33,7 +34,12 @@ public class MessageActivityViewModel extends ViewModel {
         receiverSocketID=mRepo.getSocketID(receiverEmail);
         reveiverRSAPublicKey=mRepo.getPublicKeyRSA(receiverEmail);
         reveiverAESPublicKey=mRepo.getPublicKeyAES(receiverEmail);
+        lastSeen=mRepo.getlastSeen(receiverEmail);
         mMessages=mRepo.getmMessages(senderEmail,receiverEmail);
+    }
+
+    public MutableLiveData<String> getLastSeen() {
+        return lastSeen;
     }
 
     public LiveData<String> getReceiverSocketID() {

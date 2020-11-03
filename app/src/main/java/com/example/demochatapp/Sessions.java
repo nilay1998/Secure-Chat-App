@@ -25,7 +25,7 @@ public class Sessions {
     public void killSession()
     {
         editor.putBoolean(IS_LOGIN, false);
-        editor.clear();
+        //editor.clear();
         editor.commit();
     }
 

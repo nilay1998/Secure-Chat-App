@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Build;
@@ -15,11 +16,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.demochatapp.Adapters.MessageAdapter;
 import com.example.demochatapp.Service.Models.Message;
-import com.example.demochatapp.Service.Retrofit.NetworkClient;
-import com.example.demochatapp.Service.Retrofit.RequestService;
 import com.example.demochatapp.Util.AESUtil;
 import com.example.demochatapp.Util.RSAUtil;
 import com.example.demochatapp.Util.SocketHelper;
@@ -34,17 +34,12 @@ import org.json.JSONObject;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MessageActivity extends AppCompatActivity {
     private String receiverEmail;
@@ -56,18 +51,24 @@ public class MessageActivity extends AppCompatActivity {
     private EditText msg_editText;
     private RecyclerView recyclerView;
     private MessageAdapter adapter;
+    private Toolbar toolbar;
+    private TextView toolbar_name;
+    private TextView toolbaar_lastseen;
+
     private ArrayList<Message> messageArrayList=new ArrayList<>();
     private MessageActivityViewModel messageActivityViewModel;
     private static final String TAG = "MessageActivity";
     private String receiverSocketID;
     private String reveiverPublicKey_RSA;
     private String senderPrivateKey_RSA;
+    private String lastSeen="";
 
     private String reveiverPublicKey_AES;
     private String senderPrivateKey_AES;
     private byte[] sharedSecretKey_AES;
     private ProgressBar progressBar;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,16 +128,43 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+        messageActivityViewModel.getLastSeen().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if(s.length()>0 && !s.equals("Online"))
+                {
+                    Timestamp timestamp=new Timestamp(Long.parseLong(s));
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, ''yy");
+                    Log.e(TAG, "call: "+sdf.format(timestamp));
+                    toolbaar_lastseen.setText("last seen "+sdf.format(timestamp));
+                }
+                else
+                    toolbaar_lastseen.setText(s);
+            }
+        });
+
+
         initviews();
         run_socket();
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void initviews()
     {
         msg_editText=findViewById(R.id.message2);
         send_button=findViewById(R.id.send);
+        toolbar=findViewById(R.id.toolbar);
 
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        toolbar_name=findViewById(R.id.user_name); toolbar_name.setText(receiverName);
+        toolbaar_lastseen=findViewById(R.id.user_status);
         recyclerView=findViewById(R.id.messageList);
         adapter=new MessageAdapter(messageActivityViewModel.getmMessages().getValue(),senderEmail,senderPrivateKey_RSA,sharedSecretKey_AES);
         recyclerView.setAdapter(adapter);
@@ -149,7 +177,11 @@ public class MessageActivity extends AppCompatActivity {
 
     private void run_socket()
     {
-        mSocket= SocketHelper.getInstance().getSocketConnection();
+        //SocketHelper socketHelper=SocketHelper.newInstance();
+        SocketHelper.setEmail(senderEmail);
+        SocketHelper socketHelper=SocketHelper.newInstance();
+        mSocket= socketHelper.getSocketConnection();
+        mSocket.connect();
         send_button.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -188,9 +220,26 @@ public class MessageActivity extends AppCompatActivity {
 
         mSocket.on("messageToUser", messageToUserEvent);
 
+
+        mSocket.on("activeStatus",lastSeenEvent);
+
 //        mSocket.on(receiverEmail+"socketUpdate",socketIdUpdationEvent);
     }
 
+    private Emitter.Listener lastSeenEvent=new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JSONObject data = (JSONObject) args[0];
+            Log.e(TAG, "ONLINE OFFLINE ACTICITY HAPPENING ");
+            try {
+                messageActivityViewModel.getLastSeen().postValue(data.getString("status"));
+            }
+
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
     private Emitter.Listener socketIdUpdationEvent=new Emitter.Listener() {
         @Override
         public void call(Object... args) {
