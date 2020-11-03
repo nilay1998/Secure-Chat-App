@@ -221,9 +221,19 @@ public class MessageActivity extends AppCompatActivity {
         mSocket.emit("messageRead", senderEmail, receiverEmail);
         mSocket.on("messageToUser", messageToUserEvent);
         mSocket.on("activeStatus",lastSeenEvent);
+        mSocket.on("readMessage",readMessageEvent);
 
 //        mSocket.on(receiverEmail+"socketUpdate",socketIdUpdationEvent);
     }
+
+    private Emitter.Listener readMessageEvent=new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JSONObject data = (JSONObject) args[0];
+            Log.e(TAG, "call: MESSAGES READ");
+            //messageActivityViewModel.setPrevMessagesAsRead();
+        }
+    };
 
     private Emitter.Listener lastSeenEvent=new Emitter.Listener() {
         @Override
@@ -239,6 +249,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         }
     };
+
     private Emitter.Listener socketIdUpdationEvent=new Emitter.Listener() {
         @Override
         public void call(Object... args) {
