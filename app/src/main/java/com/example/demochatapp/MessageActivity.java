@@ -55,7 +55,7 @@ public class MessageActivity extends AppCompatActivity {
     private TextView toolbar_name;
     private TextView toolbaar_lastseen;
 
-    private ArrayList<Message> messageArrayList=new ArrayList<>();
+
     private MessageActivityViewModel messageActivityViewModel;
     private static final String TAG = "MessageActivity";
     private String receiverSocketID;
@@ -194,7 +194,7 @@ public class MessageActivity extends AppCompatActivity {
                         String encrypted_msg= Base64.getEncoder().encodeToString(AESUtil.encrypt(msg,sharedSecretKey_AES));
 
                         mSocket.emit("messagedetection", senderEmail, receiverEmail, encrypted_msg,receiverSocketID);
-                        Message m=new Message(senderEmail,encrypted_msg,receiverEmail);
+                        Message m=new Message(senderEmail,encrypted_msg,receiverEmail,"0");
                         messageActivityViewModel.addNewValue(m);
                         Log.e(TAG, "onClick: "+msg+" : sent to :"+receiverEmail);
 
@@ -218,9 +218,8 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+        mSocket.emit("messageRead", senderEmail, receiverEmail);
         mSocket.on("messageToUser", messageToUserEvent);
-
-
         mSocket.on("activeStatus",lastSeenEvent);
 
 //        mSocket.on(receiverEmail+"socketUpdate",socketIdUpdationEvent);
@@ -274,8 +273,7 @@ public class MessageActivity extends AppCompatActivity {
 
 //                            msg=RSAUtil.decrypt(msg,senderPrivateKey_RSA);
                         //msg=AESUtil.decrypt(msg,sharedSecretKey_AES);
-                        Message m=new Message(sender,msg,receiver);
-                        messageArrayList.add(m);
+                        Message m=new Message(sender,msg,receiver,"0");
                         messageActivityViewModel.addNewValue(m);
                     }
 

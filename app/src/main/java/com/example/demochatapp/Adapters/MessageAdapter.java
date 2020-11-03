@@ -99,6 +99,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_MESSAGE_SENT:
                 ((SentMessageHolder) holder).message.setText(msg);
+                Log.e("MessageAdapter", "onBindViewHolder: "+messagesList.get(position).getIsRead());
+                if(messagesList.get(position).getIsRead().equals("1"))
+                    ((SentMessageHolder) holder).message.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0);
                 //((SentMessageHolder) holder).name.setText(messagesList.get(position).getNickname());
                 break;
             case VIEW_TYPE_MESSAGE_RECEIVED:

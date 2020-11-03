@@ -32,7 +32,6 @@
             android:textColor="#000"
             android:textSize="16dp"
             android:text=" message "
-            android:drawableRight="@drawable/ic_baseline_check_24"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
