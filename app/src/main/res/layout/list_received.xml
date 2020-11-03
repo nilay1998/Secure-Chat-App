@@ -13,7 +13,7 @@
         android:paddingRight="8dp"
         android:paddingBottom="4dp"
         android:id="@+id/direction"
-        android:background="@drawable/oval"
+        android:background="@drawable/msg_received"
         android:minWidth="128dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

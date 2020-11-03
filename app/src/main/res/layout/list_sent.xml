@@ -14,11 +14,11 @@
         android:paddingRight="8dp"
         android:paddingBottom="4dp"
         android:id="@+id/direction"
-        android:background="@drawable/oval"
+        android:background="@drawable/msg_sent"
         android:minWidth="128dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 <!--        <TextView-->
 <!--            android:id="@+id/nickname"-->
 <!--            android:textSize="16dp"-->
@@ -32,8 +32,11 @@
             android:textColor="#000"
             android:textSize="16dp"
             android:text=" message "
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:drawableRight="@drawable/ic_baseline_check_24"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
     </LinearLayout>
 
 </RelativeLayout>
