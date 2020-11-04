@@ -221,7 +221,7 @@ public class MessageActivity extends AppCompatActivity {
         mSocket.emit("messageRead", senderEmail, receiverEmail);
         mSocket.on("messageToUser", messageToUserEvent);
         mSocket.on("activeStatus",lastSeenEvent);
-        mSocket.on("readMessage",readMessageEvent);
+        mSocket.on("readMessageBy"+receiverEmail,readMessageEvent);
 
 //        mSocket.on(receiverEmail+"socketUpdate",socketIdUpdationEvent);
     }
@@ -231,7 +231,7 @@ public class MessageActivity extends AppCompatActivity {
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
             Log.e(TAG, "call: MESSAGES READ");
-            //messageActivityViewModel.setPrevMessagesAsRead();
+            messageActivityViewModel.setPrevMessagesAsRead();
         }
     };
 
@@ -273,6 +273,7 @@ public class MessageActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
+                    mSocket.emit("messageRead", senderEmail, receiverEmail);
                     try
                     {
                         String sender=data.getString("sender");

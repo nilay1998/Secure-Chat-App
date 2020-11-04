@@ -63,16 +63,17 @@ public class MessageActivityViewModel extends ViewModel {
         mMessages.setValue(msg);
     }
 
-//    public void setPrevMessagesAsRead(){
-//        int size=mMessages.getValue().size();
-//        for(int i=size-1;i>=0;i--)
-//        {
-//            if(mMessages.getValue().get(i).getIsRead().equals("1"))
-//                break;
-//            mMessages.getValue().get(i).setIsRead("1");
-//        }
-//        mMessages.postValue(new ArrayList<>());
-//    }
+    public void setPrevMessagesAsRead(){
+        ArrayList<Message> msg=mMessages.getValue();
+        int size=msg.size();
+        for(int i=size-1;i>=0;i--)
+        {
+            if(msg.get(i).getIsRead().equals("1"))
+                break;
+            msg.get(i).setIsRead("1");
+        }
+        mMessages.postValue(msg);
+    }
 
     @Override
     protected void onCleared() {
